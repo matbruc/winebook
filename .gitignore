@@ -34,3 +34,6 @@ yarn-error.log*
 .idea
 .vscode
 .vscode-test
+
+winebook.iml
+
