@@ -5,6 +5,9 @@
 client/node_modules
 client/.pnp
 client/.pnp.js
+api/node_modules
+api/.pnp
+api/.pnp.js
 
 # testing
 client/coverage

@@ -1,13 +1,14 @@
 import express from "express";
 
 import { winesController } from "../controllers/index.js";
+import { authMiddleware } from "../middlewares/index.js";
 
 const router = express.Router();
 
-router.get("/", winesController.getWines);
-router.get("/:id", winesController.getWine);
-router.post("/", winesController.createWine);
-router.patch("/:id", winesController.updateWine);
-router.delete("/:id", winesController.deleteWine);
+router.get("/", authMiddleware.verifyToken, winesController.getWines);
+router.get("/:id", authMiddleware.verifyToken, winesController.getWine);
+router.post("/", authMiddleware.verifyToken, winesController.createWine);
+router.patch("/:id", authMiddleware.verifyToken, winesController.updateWine);
+router.delete("/:id", authMiddleware.verifyToken, winesController.deleteWine);
 
 export default router;

@@ -1,7 +1,10 @@
+import 'dotenv/config'
 import express from 'express';
 import mongoose from "mongoose";
 
 import { usersRoute, producersRoute, reviewsRoute, winesRoute } from './routes/index.js';
+import { usersController } from './controllers/index.js';
+
 const app = express();
 
 // Environment variables
@@ -17,6 +20,11 @@ const con = mongoose.connection;
 
 app.use(express.json());
 app.use('/api/users', usersRoute);
+app.use('/api/producers', producersRoute);
+app.use('/api/wines', winesRoute);
+app.use('/api/reviews', reviewsRoute);
+app.post('/api/signin', usersController.createUser);
+app.post('/api/login', usersController.login);
 
 try{
     con.on('open',() => {

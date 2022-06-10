@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
     password: {
         type: String,
         required: true,
@@ -24,6 +19,13 @@ const userSchema = Schema({
         type: Date,
         default: new Date(),
     },
+    token: {
+        type: String,
+    },
+    role: {
+        type: String,
+        default: 'user',
+    }
 })
 
 export const userdata = mongoose.model('user', userSchema);
