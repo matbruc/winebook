@@ -8,10 +8,10 @@ import { usersController } from './controllers/index.js';
 const app = express();
 
 // Environment variables
-const port = 9000;
-const dbName = "winedb";
-const dbHost = "localhost";
-const dbPort = 27017;
+const port = process.env.API_PORT;
+const dbName = process.env.DB_NAME;
+const dbHost = process.env.DB_HOST;
+const dbPort = process.env.DB_PORT;
 
 // Connect to MongoDB
 const url = `mongodb://${dbHost}:${dbPort}/${dbName}`;
