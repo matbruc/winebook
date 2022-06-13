@@ -10,11 +10,19 @@ const getProducers = async (req, res) => {
 }
 
 const getProducer = async (req, res) => {
+  const notFoundMessage = "Producer not found";
   try {
     const producer = await Producer.findById(req.params.id);
-    res.json(producer);
+    producer ? res.json(producer) : res.status(404).json({ message: notFoundMessage });
   } catch (err) {
-    res.json({ message: err });
+    if (err.kind === "ObjectId") {
+      return res.status(404).json({
+        message: notFoundMessage
+      });
+    }
+    return res.status(500).json({
+      message: "Error retrieving producer with id " + req.params.id
+    });
   }
 }
 

@@ -5,9 +5,9 @@ import { authMiddleware } from "../middlewares/index.js";
 
 const router = express.Router();
 
-router.get('/', authMiddleware.verifyToken, usersController.getUsers);
-router.get('/:id', authMiddleware.verifyToken, usersController.getUser);
-router.patch('/:id', authMiddleware.verifyToken, usersController.updateUser);
-router.delete('/:id', authMiddleware.verifyToken, usersController.deleteUser);
+router.get('/', authMiddleware.verifyToken, authMiddleware.verifyAdmin, usersController.getUsers);
+router.get('/:id', authMiddleware.verifyToken, authMiddleware.verifyAdmin, usersController.getUser);
+router.patch('/:id', authMiddleware.verifyToken, authMiddleware.verifyAdmin, usersController.updateUser);
+router.delete('/:id', authMiddleware.verifyToken, authMiddleware.verifyAdmin, usersController.deleteUser);
 
 export default router;

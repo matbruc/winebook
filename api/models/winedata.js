@@ -9,11 +9,10 @@ const wineSchema = Schema({
       type: String,
     },
     year: {
-        type: Date,
+      type: Number,
     },
     producer: {
-        type: Schema.Types.ObjectId,
-        ref: 'producer',
+        type: JSON,
     },
     region: {
         type: String,
@@ -24,6 +23,12 @@ const wineSchema = Schema({
     country: {
         type: String,
     },
+    review: {
+        type: String,
+    },
+    rating: {
+        type: Number,
+    }
 })
 
 export const winedata = mongoose.model('wine', wineSchema);

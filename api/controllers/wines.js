@@ -10,25 +10,33 @@ const getWines = async (req, res) => {
 }
 
 const getWine = async (req, res) => {
+  const notFoundMessage = "Wine not found";
   try {
     const wine = await Wine.findById(req.params.id);
-    res.json(wine);
+    wine ? res.json(wine) : res.status(404).json({ message: notFoundMessage });
   } catch (err) {
-    res.json({ message: err });
+    if (err.kind === "ObjectId") {
+      return res.status(404).json({
+        message: notFoundMessage
+      });
+    }
+    return res.status(500).json({
+      message: "Error retrieving wine with id " + req.params.id
+    });
   }
 }
 
 const createWine = async (req, res) => {
   const wine = new Wine({
     name: req.body.name,
+    variety: req.body.variety,
     year: req.body.year,
-    grapes: req.body.grapes,
     country: req.body.country,
     region: req.body.region,
-    description: req.body.description,
-    picture: req.body.picture,
-    price: req.body.price,
-    alcohol: req.body.alcohol,
+    subregion: req.body.subregion,
+    producer: req.body.producer,
+    review: req.body.review,
+    rating: req.body.rating
   });
   try {
     const savedWine = await wine.save();

@@ -10,17 +10,25 @@ const getReviews = async (req, res) => {
 }
 
 const getReview = async (req, res) => {
+  const notFoundMessage = "Review not found";
   try {
     const review = await Review.findById(req.params.id);
-    res.json(review);
+    review ? res.json(review) : res.status(404).json({ message: notFoundMessage });
   } catch (err) {
-    res.json({ message: err });
+    if (err.kind === "ObjectId") {
+      return res.status(404).json({
+        message: notFoundMessage
+      });
+    }
+    return res.status(500).json({
+      message: "Error retrieving review with id " + req.params.id
+    });
   }
 }
 
 const createReview = async (req, res) => {
   const review = new Review({
-    username: req.body.username,
+    user: req.body.user,
     wine: req.body.wine,
     look_tone: req.body.look_tone,
     look_intensity: req.body.look_intensity,

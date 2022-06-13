@@ -3,12 +3,10 @@ const { Schema } = mongoose;
 
 const reviewSchema = Schema({
     user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user',
+        type: JSON,
     },
     wine: {
-        type: Schema.Types.ObjectId,
-        ref: 'wine',
+        type: JSON,
     },
     submitted_on: {
         type: Date,
