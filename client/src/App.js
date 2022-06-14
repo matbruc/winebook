@@ -14,11 +14,13 @@ import Producer from "./components/Producers/Producer";
 import WinesList from "./components/Wines/WinesList";
 import WinesForm from "./components/Wines/WinesForm";
 import Wine from "./components/Wines/Wine";
+import ReportsHome from "./components/Reports/ReportsHome";
+import WinesReport from "./components/Reports/WinesReport";
 
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 
+import NavDropdown from "react-bootstrap/NavDropdown";
 import Navbar from "react-bootstrap/Navbar";
 
 
@@ -85,6 +87,8 @@ function App() {
             <Route path="/wines" element={<WinesList />} />
             <Route path="/wines/add" element={<WinesForm />} />
             <Route path="/wines/:id" element={<Wine />} />
+            <Route path="/reports" element={<ReportsHome />} />
+            <Route path="/reports/wines" element={<WinesReport />} />
           </Routes>
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {Card, Col, Row} from "react-bootstrap";
 import AuthService from "../../services/AuthService";
 import Container from "react-bootstrap/Container";
+import Image from 'react-bootstrap/Image'
 
 const Home = () => {
 
@@ -16,12 +17,19 @@ const Home = () => {
 
   return (
     <Container>
+      <Card>
+        <Image
+          src="life-is-too-short-to-drink-bad-winejpgraw1.jpeg"
+          style={{ width: '100%'}}
+          alt="Wine"
+          fluid
+        />
+      </Card>
       {!currentUser &&
       <Card>
         <Card.Body>
           <Card.Title><h1>winebook</h1></Card.Title>
           <Card.Text>
-            <h4>Life is too short to drink bad wine</h4>
             <p><span>In order to continue, please login or sign up.</span></p>
           </Card.Text>
 
@@ -36,11 +44,7 @@ const Home = () => {
               <h1>winebook</h1>
             </Col>
           </Row>
-          <Row>
-            <Col>
-              <h4>Life is too short to drink bad wine</h4>
-            </Col>
-          </Row>
+
           <Row>
             <Col>
               <Card>
