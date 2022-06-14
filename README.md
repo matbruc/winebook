@@ -14,6 +14,11 @@ wine reviews notebook for wine tasters and people that enjoy good wines
 9. Run `npm start` in `client` folder.
 10. Open `http://localhost:3000/` in your browser.
 
+#### Test Users Credentials
+
+- User without admin: testuser@test.com / Test123
+- User with admin: testadmin@test.com / Test123
+
 ### Tests
 
 1. Run `npm test` in `api` folder.
