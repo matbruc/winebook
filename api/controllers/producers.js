@@ -2,7 +2,7 @@ import { producerdata as Producer } from "../models/producerdata.js";
 
 const getProducers = async (req, res) => {
   try {
-    const producers = await Producer.find();
+    const producers = await Producer.find().sort({ name: 1 });
     res.json(producers);
   } catch (err) {
     res.json({ message: err });

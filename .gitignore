@@ -11,6 +11,7 @@ api/.pnp.js
 
 # testing
 client/coverage
+api/coverage
 
 # production
 client/build

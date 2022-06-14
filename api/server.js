@@ -1,5 +1,5 @@
 import express from 'express';
-import { usersRoute, producersRoute, reviewsRoute, winesRoute } from './routes/index.js';
+import { usersRoute, producersRoute, reviewsRoute, winesRoute, reportsRoute } from './routes/index.js';
 import cors from "cors";
 import {usersController} from "./controllers/index.js";
 
@@ -11,6 +11,7 @@ const createServer = () => {
   app.use('/api/producers', producersRoute);
   app.use('/api/wines', winesRoute);
   app.use('/api/reviews', reviewsRoute);
+  app.use('/api/reports', reportsRoute);
   app.post('/api/register', usersController.createUser);
   app.post('/api/login', usersController.login);
   return app;
