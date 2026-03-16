@@ -1,30 +1,14 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
 import ProducerService from "../../services/ProducerService";
 import Button from "react-bootstrap/Button";
 import AuthService from "../../services/AuthService";
-
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        This field is required!
-      </div>
-    );
-  }
-}
 
 const ProducersForm = ({ producer }) => {
   let navigate = useNavigate();
   const currentUser = AuthService.getCurrentUser();
 
   !currentUser && navigate('/login');
-
-  const form = useRef();
-  const checkBtn = useRef();
 
   const [name, setName] = useState("");
   const [region, setRegion] = useState("");
@@ -44,12 +28,18 @@ const ProducersForm = ({ producer }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // HTML5 validation check
+    const formElement = e.target;
+    if (!formElement.reportValidity()) {
+      return;
+    }
+
     setMessage("");
     setLoading(true);
     setSuccessful(false);
-    form.current.validateAll();
 
-    if (checkBtn.current.context._errors.length === 0) {
+    if (true) {
       if (producer) {
         ProducerService.updateProducer(producer._id, {name, region})
           .then(
@@ -117,34 +107,33 @@ const ProducersForm = ({ producer }) => {
       <div className="auth-inner">
         <div>
           {producer ? <h1>Edit Producer</h1> : <h1>Add Producer</h1>}
-          <Form onSubmit={handleSubmit} ref={form}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label>Name</label>
-              <Input
+              <input
                 type="text"
                 className="form-control"
+                id="name"
                 name="name"
                 value={name}
                 onChange={onChangeName}
-                validations={[required]}
+                required
               />
             </div>
             <div className="mb-3">
               <label>Region</label>
-              <Input
+              <input
                 type="text"
                 className="form-control"
+                id="region"
                 name="region"
                 value={region}
                 onChange={onChangeRegion}
-                validations={[required]}
+                required
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              { loading && (
-                <span className="spinner-border spinner-border-sm"/>
-              )}
-              {producer ? "Update Producer" : "Add Producer"}
+              { producer ? "Update Producer" : "Add Producer"}
             </button>
             {producer &&
               <Button style={{marginLeft: "1em"}} className="btn btn-secondary" onClick={handleCancel}>
@@ -158,8 +147,7 @@ const ProducersForm = ({ producer }) => {
                 </div>
               </div>
             )}
-            <CheckButton style={{ display: "none" }} ref={checkBtn} />
-          </Form>
+          </form>
         </div>
       </div>
     </div>

@@ -40,4 +40,6 @@ yarn-error.log*
 .vscode-test
 
 winebook.iml
-agent.md
+.env
+api/.env
+client/.env

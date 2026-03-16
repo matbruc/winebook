@@ -1,31 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
 import WinesService from "../../services/WinesService";
 import Button from "react-bootstrap/Button";
 import AuthService from "../../services/AuthService";
 import ProducerService from "../../services/ProducerService";
-import Textarea from "react-validation/build/textarea";
 import { Rating } from 'react-simple-star-rating'
-
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        This field is required!
-      </div>
-    );
-  }
-}
 
 const WinesForm = ({ wine }) => {
   let navigate = useNavigate();
   const currentUser = AuthService.getCurrentUser();
   !currentUser && navigate('/login');
-  const form = useRef();
-  const checkBtn = useRef();
 
   const [name, setName] = useState("");
   const [variety, setVariety] = useState("");
@@ -92,12 +76,18 @@ const WinesForm = ({ wine }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // HTML5 validation check
+    const formElement = e.target;
+    if (!formElement.reportValidity()) {
+      return;
+    }
+
     setMessage("");
     setLoading(true);
     setSuccessful(false);
-    form.current.validateAll();
 
-    if (checkBtn.current.context._errors.length === 0) {
+    if (true) {
       if (wine) {
         WinesService.updateWine(wine._id, { name, variety, year, producer, region, subregion, country, review, rating })
           .then(
@@ -186,38 +176,41 @@ const WinesForm = ({ wine }) => {
         <div>
           <h1>{wine ? "Edit Wine" : "Add Wine"}</h1>
         </div>
-        <Form onSubmit={handleSubmit} ref={form}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="name">Name</label>
-            <Input
+            <input
               type="text"
               className="form-control"
+              id="name"
               name="name"
               value={name}
               onChange={onChangeName}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3">
             <label htmlFor="variety">Variety</label>
-            <Input
+            <input
               type="text"
               className="form-control"
+              id="variety"
               name="variety"
               value={variety}
               onChange={onChangeVariety}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3">
             <label htmlFor="year">Year</label>
-            <Input
+            <input
               type="number"
               className="form-control"
+              id="year"
               name="year"
               value={year}
               onChange={onChangeYear}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3">
@@ -227,10 +220,11 @@ const WinesForm = ({ wine }) => {
             </p>
             <select
               className="form-control"
+              id="producer"
               name="producer"
               value={producer ? producer._id : ""}
-              data-live-search="true"
-              onChange={onChangeProducer}>
+              onChange={onChangeProducer}
+              required>
               <option value="">Select a producer</option>
               {producers.map(producer => (
                 <option key={producer._id} value={producer._id}>{producer.name}</option>
@@ -239,46 +233,49 @@ const WinesForm = ({ wine }) => {
           </div>
           <div className="mb-3">
             <label htmlFor="region">Region</label>
-            <Input
+            <input
               type="text"
               className="form-control"
+              id="region"
               name="region"
               value={region}
               onChange={onChangeRegion}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3">
             <label htmlFor="subregion">Subregion</label>
-            <Input
+            <input
               type="text"
               className="form-control"
+              id="subregion"
               name="subregion"
               value={subregion}
               onChange={onChangeSubregion}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3">
             <label htmlFor="country">Country</label>
-            <Input
+            <input
               type="text"
               className="form-control"
+              id="country"
               name="country"
               value={country}
               onChange={onChangeCountry}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3">
             <label htmlFor="review">Review</label>
-            <Textarea
-              type="text"
+            <textarea
               className="form-control"
+              id="review"
               name="review"
               value={review}
               onChange={onChangeReview}
-              validations={[required]}
+              required
             />
           </div>
           <div className="mb-3" style={{marginTop: "2em"}}>
@@ -308,11 +305,7 @@ const WinesForm = ({ wine }) => {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading && (
-                <span className="spinner-border spinner-border-sm"></span>
-              )}
-              {loading && <span>Loading...</span>}
-              {wine ? "Update Wine" : "Add Wine"}
+              {loading ? 'Loading...' : (wine ? "Update Wine" : "Add Wine")}
             </button>
             {wine && (
               <Button style={{marginLeft: "1em"}} className="btn btn-secondary" onClick={handleCancel}>
@@ -327,8 +320,7 @@ const WinesForm = ({ wine }) => {
               </div>
             </div>
           )}
-          <CheckButton style={{display: "none"}} ref={checkBtn}/>
-        </Form>
+        </form>
       </div>
     </div>
   );

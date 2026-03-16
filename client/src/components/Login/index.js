@@ -1,26 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
 
 import AuthService from "../../services/AuthService";
 
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        This field is required!
-      </div>
-    );
-  }
-};
-
 const Login = () => {
   let navigate = useNavigate();
-
-  const form = useRef();
-  const checkBtn = useRef();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,70 +24,69 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
+    // HTML5 validation check
+    const formElement = e.target;
+    if (!formElement.reportValidity()) {
+      return;
+    }
+
     setMessage("");
     setLoading(true);
 
-    form.current.validateAll();
+    AuthService.login(email, password).then(
+      () => {
+        navigate("/");
+        window.location.reload();
+      },
+      (error) => {
+        const resMessage =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-    if (checkBtn.current.context._errors.length === 0) {
-      AuthService.login(email, password).then(
-        () => {
-          navigate("/");
-          window.location.reload();
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          setLoading(false);
-          setMessage(resMessage);
-        }
-      );
-    } else {
-      setLoading(false);
-    }
+        setLoading(false);
+        setMessage(resMessage);
+      }
+    );
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
-        <Form onSubmit={handleLogin} ref={form}>
+        <form onSubmit={handleLogin}>
           <h3>Sign In</h3>
 
           <div className="mb-3">
             <label>Email address</label>
-            <Input
+            <input
               type="text"
               className="form-control"
+              id="email"
               name="email"
               value={email}
               onChange={onChangeEmail}
-              validations={[required]}
+              required
             />
           </div>
 
           <div className="mb-3">
             <label>Password</label>
-            <Input
+            <input
               type="password"
               className="form-control"
+              id="password"
               name="password"
               value={password}
               onChange={onChangePassword}
-              validations={[required]}
+              required
             />
           </div>
 
           <div className="d-grid">
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading && (
-                <span className="spinner-border spinner-border-sm"/>
-              )}
-              <span>Submit</span>
+              {loading ? 'Loading...' : 'Submit'}
             </button>
           </div>
 
@@ -114,8 +97,7 @@ const Login = () => {
               </div>
             </div>
           )}
-          <CheckButton style={{ display: "none" }} ref={checkBtn} />
-        </Form>
+        </form>
       </div>
     </div>
   );
