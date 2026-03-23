@@ -65,14 +65,106 @@
 3. **Upgrade react-google-charts**: Get latest stable version
 
 ### Priority 2: Security & Stability
-1. **Run npm audit**: Check for security vulnerabilities
-2. **Update all dependencies**: `npx npm-check-updates -u` (review changes first)
-3. **Regenerate package-lock.json**: Clean install
+1. **Run npm audit**: Check for security vulnerabilities ✓ COMPLETED
+2. **Update all dependencies**: `npm audit fix` (safe, non-breaking updates only) ✓ COMPLETED
+3. **Regenerate package-lock.json**: Clean install ✓ COMPLETED
+
+**Results after Priority 2:**
+- **Client**: Reduced from 29 to 26 vulnerabilities (3 safe fixes applied)
+  - Remaining 26 vulnerabilities are tied to Create React App's transitive dependencies
+  - Requires `--force` to fix, which would break the app
+  - Resolution: Migrate to Vite (Priority 3)
+- **API**: Still 18 high severity vulnerabilities
+  - Tied to Mongoose v6 → MongoDB → AWS SDK → fast-xml-parser
+  - Resolution: Upgrade to Mongoose v8 (Priority 3)
 
 ### Priority 3: Long-term Modernization
 1. **Migrate from Create React App to Vite**: Faster builds, better DX, more modern
 2. **Consider TypeScript**: Better type safety for growing codebase
 3. **Update to Mongoose 8**: Latest MongoDB ODM features
+
+---
+
+## Vite Migration Status: COMPLETED ✓
+
+The Vite migration has been completed successfully.
+
+### Changes Made:
+
+#### 1. Vite Configuration
+- ✅ `vite.config.js` - Main configuration with React plugin and Vitest
+- ✅ `vitest.config.js` - Test configuration
+- ✅ `client/index.html` - HTML file in root (replaces `public/index.html`)
+
+#### 2. Scripts in package.json
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest"
+  }
+}
+```
+
+#### 3. Entry File
+- ✅ `src/index.jsx` - Entry point with ReactDOM.createRoot
+
+#### 4. Environment Variables Migration
+- ✅ Migrated from `process.env.REACT_APP_API_URL` to `import.meta.env.VITE_API_URL`
+- ✅ Updated services: AuthService, WinesService, ProducerService, UserService, ReportsService
+- ✅ Tests updated to use hardcoded URL `'http://localhost:9000'`
+
+#### 5. Dependencies Installed
+- ✅ `vite@^5.4.21`
+- ✅ `@vitejs/plugin-react@^4.7.0`
+- ✅ `vitest@^2.1.9`
+- ✅ `jsdom@^27.2.0`
+
+#### 6. Tests
+- ✅ All tests passing (34 tests)
+- ✅ Vitest configured with globals, jsdom environment, and setupTests.js
+
+#### 7. Build
+- ✅ `npm run build` works correctly
+- ✅ Output in `dist/` with minified assets
+
+### Environment Variables Required (.env.example):
+```
+VITE_API_URL=http://localhost:9000
+```
+
+### Updated Commands:
+```bash
+# Start development
+npm run dev
+
+# Build for production
+npm run build
+
+# Production preview
+npm run preview
+
+# Run tests
+npm test
+```
+
+### Key CRA → Vite Differences:
+| Create React App | Vite |
+|-----------------|------|
+| `npm start` | `npm run dev` |
+| `npm run build` | `npm run build` |
+| `process.env.REACT_APP_*` | `import.meta.env.VITE_*` |
+| `public/index.html` | `index.html` in root |
+| react-scripts | vite + plugin-react |
+| Jest | Vitest |
+
+### Notes:
+- The `@` alias is configured but not used in the current code
+- `eslintConfig` in package.json still references `react-app` - can be cleaned up
+- CSS warnings are normal with jsdom and do not affect functionality
+- Build produces a warning about large chunks (>500KB) - can be optimized with code-splitting
 
 ---
 

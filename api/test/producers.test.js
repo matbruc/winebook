@@ -4,9 +4,11 @@ import supertest from 'supertest'
 import createServer from '../server'
 import { producerdata as Producer } from "../models/producerdata.js";
 // Environment variables
-const dbName = process.env.TEST_DB_NAME;
+const dbName = process.env.TEST_DB_NAME || process.env.DB_NAME;
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
 
 const user = {
   name: "test-wines",
@@ -38,8 +40,9 @@ const login = async app => {
 }
 
 beforeEach((done) => {
+  const url = `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
   mongoose.connect(
-    `mongodb://${dbHost}:${dbPort}/${dbName}`,
+    url,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => done()
   );
@@ -165,5 +168,31 @@ test("DELETE /api/producers/:id", async () => {
     .expect(404)
     .then((response) => {
       expect(response.body.message).toBe("Producer not found");
+    });
+});
+
+test("GET /api/producers/:id with invalid ObjectId", async () => {
+  await register(app);
+  await login(app);
+
+  await supertest(app)
+    .get("/api/producers/invalidObjectId123")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(404)
+    .then((response) => {
+      expect(response.body.message).toBe("Producer not found");
+    });
+});
+
+test("GET /api/producers with empty database", async () => {
+  await register(app);
+  await login(app);
+
+  await supertest(app)
+    .get("/api/producers")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200)
+    .then((response) => {
+      expect(Array.isArray(response.body)).toBeTruthy();
     });
 });

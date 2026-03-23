@@ -61,7 +61,7 @@ docker-compose down
 | `MONGO_DB_NAME` | Database name | `winedb` |
 | `MONGO_DB_USER` | Database user | `root` |
 | `MONGO_DB_PASSWORD` | Database password | (empty) |
-| `JWT_TOKEN_KEY` | JWT signing key | `supersecretkey` |
+| `TOKEN_KEY` | JWT signing key | `supersecretkey` |
 
 ### Network Ports
 

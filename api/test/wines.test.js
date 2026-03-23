@@ -3,9 +3,11 @@ import mongoose from 'mongoose'
 import supertest from 'supertest'
 import createServer from '../server'
 // Environment variables
-const dbName = process.env.TEST_DB_NAME;
+const dbName = process.env.TEST_DB_NAME || process.env.DB_NAME;
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
 
 import { winedata as Wine } from "../models/winedata.js";
 
@@ -39,8 +41,9 @@ const login = async app => {
 }
 
 beforeEach((done) => {
+  const url = `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
   mongoose.connect(
-    `mongodb://${dbHost}:${dbPort}/${dbName}`,
+    url,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => done()
   );
@@ -244,5 +247,31 @@ test("DELETE /api/wines/:id", async () => {
       expect(response.body.message).toBe("Wine not found");
     });
 
+});
+
+test("GET /api/wines/:id with invalid ObjectId", async () => {
+  await register(app);
+  await login(app);
+
+  await supertest(app)
+    .get("/api/wines/invalidObjectId123")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(404)
+    .then((response) => {
+      expect(response.body.message).toBe("Wine not found");
+    });
+});
+
+test("GET /api/wines with empty database", async () => {
+  await register(app);
+  await login(app);
+
+  await supertest(app)
+    .get("/api/wines")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200)
+    .then((response) => {
+      expect(Array.isArray(response.body)).toBeTruthy();
+    });
 });
 

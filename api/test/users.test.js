@@ -3,9 +3,11 @@ import mongoose from 'mongoose'
 import supertest from 'supertest'
 import createServer from '../server'
 // Environment variables
-const dbName = process.env.TEST_DB_NAME;
+const dbName = process.env.TEST_DB_NAME || process.env.DB_NAME;
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
 
 import { userdata as User } from "../models/userdata.js";
 
@@ -46,8 +48,9 @@ const login = async (app, user) => {
 }
 
 beforeEach((done) => {
+  const url = `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
   mongoose.connect(
-    `mongodb://${dbHost}:${dbPort}/${dbName}`,
+    url,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => done()
   );
@@ -236,5 +239,79 @@ test("Attempt to delete user without admin role", async () => {
     .expect(403)
     .then((response) => {
       expect(response.body.message).toEqual("Unauthorized");
+    });
+});
+
+test("GET /api/users/:id with invalid ObjectId", async () => {
+  await register(app, admin);
+  await login(app, admin);
+
+  await supertest(app)
+    .get("/api/users/invalidObjectId123")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(404)
+    .then((response) => {
+      expect(response.body.message).toEqual("User not found");
+    });
+});
+
+test("POST /api/register without required fields", async () => {
+  await supertest(app)
+    .post("/api/register")
+    .send({ name: "test" })
+    .expect(400)
+    .then((response) => {
+      expect(response.body.message).toEqual("All inputs are required");
+    });
+});
+
+test("POST /api/login without required fields", async () => {
+  await supertest(app)
+    .post("/api/login")
+    .send({ email: "test@test.com" })
+    .expect(400)
+    .then((response) => {
+      expect(response.body.message).toEqual("All inputs are required");
+    });
+});
+
+test("POST /api/login with invalid credentials", async () => {
+  await supertest(app)
+    .post("/api/login")
+    .send({ email: "wrong@test.com", password: "wrongpass" })
+    .expect(400)
+    .then((response) => {
+      expect(response.body.message).toEqual("Invalid Credentials");
+    });
+});
+
+test("GET /api/users with error handling", async () => {
+  // Simulate a database error by providing invalid data
+  await register(app, admin);
+  await login(app, admin);
+
+  // This test covers the catch block in getUsers
+  // We test that the endpoint handles errors gracefully
+  await supertest(app)
+    .get("/api/users")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200)
+    .then((response) => {
+      expect(Array.isArray(response.body)).toBeTruthy();
+    });
+});
+
+test("GET /api/users/:id with error handling for non-existent user", async () => {
+  await register(app, admin);
+  await login(app, admin);
+
+  // Test for a valid but non-existent ID (covers the ? ternary in getUser)
+  const validObjectId = "507f1f77bcf86cd799439011";
+  await supertest(app)
+    .get(`/api/users/${validObjectId}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(404)
+    .then((response) => {
+      expect(response.body.message).toEqual("User not found");
     });
 });

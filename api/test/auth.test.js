@@ -3,15 +3,18 @@ import mongoose from 'mongoose'
 import supertest from 'supertest'
 import createServer from '../server'
 // Environment variables
-const dbName = process.env.TEST_DB_NAME;
+const dbName = process.env.TEST_DB_NAME || process.env.DB_NAME;
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
 
 import { userdata as User } from "../models/userdata.js";
 
 beforeEach((done) => {
+  const url = `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
   mongoose.connect(
-    `mongodb://${dbHost}:${dbPort}/${dbName}`,
+    url,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => done()
   );

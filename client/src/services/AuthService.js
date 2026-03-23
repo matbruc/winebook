@@ -2,8 +2,9 @@ import axios from "axios";
 
 class AuthService {
   login(email, password) {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';
     return axios
-      .post(process.env.REACT_APP_API_URL + "/api/login", {
+      .post(API_URL + "/api/login", {
         email,
         password
       })
@@ -21,7 +22,8 @@ class AuthService {
   }
 
   register(name, email, password) {
-    return axios.post(process.env.REACT_APP_API_URL + "/api/register", {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';
+    return axios.post(API_URL + "/api/register", {
       name,
       email,
       password
@@ -35,7 +37,7 @@ class AuthService {
   }
 
   getCurrentUser() {
-    return JSON.parse(localStorage.getItem('user'));;
+    return JSON.parse(localStorage.getItem('user'));
   }
 }
 
